@@ -1,0 +1,12 @@
+{
+	"name": "imqs-html2pdf",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"start": "node ./server.js"
+	},
+	"dependencies": {
+		"express": "~4.16.0",
+		"puppeteer": "^1.4.0"
+	}
+}
