@@ -8,6 +8,10 @@ Start server: `npm start`
 
 # Docker
 
-`ruby docker-build.rb -t latest`
+Build container: `docker build -t imqs-html2pdf .`
 
-`docker run -p 8080:8080 -d imqs/imqs-html2pdf`
+Run container: `docker run -p 8080:8080 -d imqs-html2pdf`
+
+Tag container: `docker tag imqs-html2pdf gcr.io/html2pdf-207011/imqs-html2pdf`
+
+Push container: `docker push gcr.io/html2pdf-207011/imqs-html2pdf`
