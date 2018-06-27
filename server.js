@@ -49,5 +49,32 @@ app.post('/html2pdf', (req, res) => {
 	})();
 });
 
+app.get('/reportpdff', (req, res) => {
+	const link = req.query['link'];
+
+	const pageSize = 'A4';
+	const pageLandscape = false;
+
+	(async () => {
+		try {
+			const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+			const page = await browser.newPage();
+			console.log(req);
+			page.setCookie(req.cookies);
+			await page.goto(link, { waitUntil: 'networkidle2' });
+
+			await page.pdf({ format: pageSize, landscape: pageLandscape, printBackground: true })
+				.then((value) => {
+					res.setHeader("content-type", "application/pdf");
+					res.send(value);
+				});
+
+			await browser.close();
+		} catch (error) {
+			console.error(error);
+		}
+	})();
+});
+
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
