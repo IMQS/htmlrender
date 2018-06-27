@@ -4,7 +4,7 @@ const express = require('express');
 const puppeteer = require('puppeteer');
 
 // Constants
-const PORT = 8080;
+const PORT = 5314;
 const HOST = '0.0.0.0';
 
 // App
@@ -21,15 +21,20 @@ app.use(function (req, res, next) {
 });
 
 app.post('/html2pdf', (req, res) => {
-	var html = req.text;
-	var pageSize = req.query['pagesize'] || 'A4';
-	var pageLandscape = req.query['pagelandscape'] === 'true';
+	const html = req.text;
+	const link = req.query['link'];
+
+	const pageSize = req.query['pagesize'] || 'A4';
+	const pageLandscape = req.query['pagelandscape'] === 'true';
 
 	(async () => {
 		try {
 			const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
 			const page = await browser.newPage();
-			await page.setContent(html);
+			if (link)
+				await page.goto(link, { waitUntil: 'networkidle2' });
+			else
+				await page.setContent(html);
 
 			await page.pdf({ format: pageSize, landscape: pageLandscape, printBackground: true })
 				.then((value) => {
