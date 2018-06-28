@@ -6,6 +6,7 @@
 		"start": "node ./server.js"
 	},
 	"dependencies": {
+		"cookie-parser": "^1.4.3",
 		"express": "~4.16.0",
 		"puppeteer": "^1.4.0"
 	}

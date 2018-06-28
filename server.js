@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const puppeteer = require('puppeteer');
 
 // Constants
@@ -9,6 +10,8 @@ const HOST = '0.0.0.0';
 
 // App
 const app = express();
+app.use(cookieParser());
+
 app.use(function (req, res, next) {
 	if (req.is('text/*')) {
 		req.text = '';
@@ -19,6 +22,14 @@ app.use(function (req, res, next) {
 		next();
 	}
 });
+
+const setCookies = (page, cookies) => {
+	const pupCookies = [];
+	for (const name in cookies) {
+        pupCookies.push({ name: name, value: cookies[name], path: '/', domain: '192.168.8.102' });
+	}
+    return page.setCookie(...pupCookies);
+};
 
 app.post('/html2pdf', (req, res) => {
 	const html = req.text;
@@ -59,8 +70,8 @@ app.get('/reportpdff', (req, res) => {
 		try {
 			const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
 			const page = await browser.newPage();
-			console.log(req);
-			page.setCookie(req.cookies);
+
+			await setCookies(page, req.cookies);
 			await page.goto(link, { waitUntil: 'networkidle2' });
 
 			await page.pdf({ format: pageSize, landscape: pageLandscape, printBackground: true })
