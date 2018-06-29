@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const puppeteer = require('puppeteer');
@@ -23,11 +24,28 @@ app.use(function (req, res, next) {
 	}
 });
 
+const launchPuppeteer = () => {
+	const isPkg = typeof process.pkg !== 'undefined';
+	const chromiumExecutablePath = (isPkg
+			? puppeteer.executablePath().replace(
+				/^.*?\/node_modules\/puppeteer\/\.local-chromium/,
+				path.join(path.dirname(process.execPath), 'chromium')
+			)
+			: puppeteer.executablePath()
+	);
+	return puppeteer.launch({
+		args: ['--no-sandbox', '--disable-setuid-sandbox'],
+		executablePath: chromiumExecutablePath
+	});
+};
+
 const setCookies = (page, cookies) => {
+	console.log("req cookies:"); console.log(cookies);
 	const pupCookies = [];
 	for (const name in cookies) {
-        pupCookies.push({ name: name, value: cookies[name], path: '/', domain: '192.168.8.102' });
+        pupCookies.push({ name: name, value: cookies[name], path: '/', domain: 'localhost' });
 	}
+	console.log("pup cookies:"); console.log(pupCookies);
     return page.setCookie(...pupCookies);
 };
 
@@ -68,10 +86,11 @@ app.get('/reportpdff', (req, res) => {
 
 	(async () => {
 		try {
-			const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+			const browser = await launchPuppeteer();
 			const page = await browser.newPage();
 
 			await setCookies(page, req.cookies);
+			console.log(await page.cookies());
 			await page.goto(link, { waitUntil: 'networkidle2' });
 
 			await page.pdf({ format: pageSize, landscape: pageLandscape, printBackground: true })
