@@ -16,8 +16,10 @@ Start server: `npm start`
 
 Build container: `docker build -t imqs-html2pdf .`
 
-Run container: `docker run -p 8080:8080 -d imqs-html2pdf`
+Run container: `docker run -p 8080:80 imqs-html2pdf`
 
 Tag container: `docker tag imqs-html2pdf gcr.io/html2pdf-207011/imqs-html2pdf`
 
 Push container: `docker push gcr.io/html2pdf-207011/imqs-html2pdf`
+
+Deploy new container onto GCP VM: `gcloud compute instances update-container imqs-puppeteer-server --container-image gcr.io/html2pdf-207011/imqs-html2pdf`
