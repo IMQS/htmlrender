@@ -2,6 +2,7 @@
 
 const express = require('express');
 const puppeteer = require('puppeteer');
+const bodyParser = require('body-parser');
 
 // Constants
 const PORT = 80;
@@ -9,6 +10,17 @@ const HOST = '0.0.0.0';
 
 // App
 const app = express();
+
+app.use(bodyParser.json({
+	limit: '50mb'
+}));
+app.use(bodyParser.urlencoded({
+	limit: '50mb',
+	extended: true,
+	parameterLimit: 50000
+}));
+
+
 app.use(function (req, res, next) {
 	if (req.is('text/*')) {
 		req.text = '';
@@ -23,39 +35,70 @@ app.use(function (req, res, next) {
 });
 
 function render(req, res) {
-	if (req.text === undefined) {
+	const format = req.query['format'] || 'pdf';
+	const pageSize = req.query['pagesize'] || 'A4';
+	const pageLandscape = req.query['pagelandscape'] === 'true';
+
+	let width = req.query['width'] || 210 * 4;
+	let height = req.query['height'] || 297 * 4;
+	let deviceScaleFactor = req.query['deviceScaleFactor'] || 1.0;
+	let topMargin = req.query['top'] || 0;
+	let bottomMargin = req.query['bottom'] || 0;
+
+	let bodyHtml;
+	let headerHtml;
+	let footerHtml;	
+	let isHeaderFooter = false;
+	
+	width = parseInt(width);
+	height = parseInt(height);
+	deviceScaleFactor = parseFloat(deviceScaleFactor);
+	topMargin = parseInt(topMargin);
+	bottomMargin = parseInt(bottomMargin);
+
+	if (req.is('application/json')) {
+		// If you are using a header and/or footer, then you probably want to specify 
+		// top and bottom margin
+		headerHtml = req.body.header;
+		bodyHtml = req.body.body;
+		footerHtml = req.body.footer;
+	} else if (req.text !== undefined) {
+		bodyHtml = req.text;
+	} else {
 		res.status(400).send('The body must have Content-Type:text/html');
 		return;
 	}
 
-	var html = req.text;
-	var format = req.query['format'] || 'pdf';
-	var pageSize = req.query['pagesize'] || 'A4';
-	var pageLandscape = req.query['pagelandscape'] === 'true';
-	var width = req.query['width'] || 210 * 4;
-	var height = req.query['height'] || 297 * 4;
-	var deviceScaleFactor = req.query['deviceScaleFactor'] || 1.0;
-
-	width = parseInt(width);
-	height = parseInt(height);
-	deviceScaleFactor = parseFloat(deviceScaleFactor);
+	if (headerHtml || footerHtml)
+		isHeaderFooter = true;
 
 	(async () => {
 		try {
-			const browser = await puppeteer.launch(
-				{ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+			const browser = await puppeteer.launch({
+				args: ['--no-sandbox', '--disable-setuid-sandbox']
+			});
 			const page = await browser.newPage();
-			await page.setContent(html);
+			await page.setContent(bodyHtml, {
+				waitUntil: 'domcontentloaded'
+			});
 
-			if (format == 'pdf') {
+			if (format == 'pdf') {				
 				await page.pdf({
-					format: pageSize,
-					landscape: pageLandscape,
-					printBackground: true
-				}).then((value) => {
-					res.setHeader('content-type', 'application/pdf');
-					res.send(value);
-				});
+						format: pageSize,
+						landscape: pageLandscape,
+						printBackground: true,
+						displayHeaderFooter: isHeaderFooter,
+						headerTemplate: headerHtml,
+						footerTemplate: footerHtml,
+						margin: {
+							top: topMargin,
+							bottom: bottomMargin
+						}
+					})
+					.then((value) => {
+						res.setHeader('content-type', 'application/pdf');
+						res.send(value);
+					});
 			} else if (format == 'png') {
 				await page.setViewport({
 					width: width,
@@ -74,8 +117,7 @@ function render(req, res) {
 			} else {
 				res.status(400).send(`Unknown format ${format}. Valid formats are pdf,png`);
 			}
-
-			await browser.close();
+			await browser.close()
 		} catch (error) {
 			console.error(error);
 			res.status(400).send(error);
