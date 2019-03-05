@@ -125,10 +125,25 @@ function render(req, res) {
 	})();
 }
 
+function version(req, res) {
+	res.send({
+		version: '1.0'
+	});
+}
+
+function ping(req, res) {
+	res.send({
+		timestamp: +new Date()
+	});
+}
+
 // The original API was called html2pdf, but this has grown to be able to produce PNGs,
 // so that's why it got another name "render".
 app.post('/html2pdf', render);
 app.post('/render', render);
+
+app.get('/version', version);
+app.get('/ping', ping);
 
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
