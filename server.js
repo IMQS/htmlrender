@@ -127,7 +127,7 @@ function render(req, res) {
 
 function version(req, res) {
 	res.send({
-		version: '1.1'
+		version: '1.2'
 	});
 }
 
