@@ -1,3 +1,5 @@
+# docker build -t imqs/htmlrender:master .
+
 FROM node:lts
 
 RUN apt-get update && \
@@ -11,11 +13,15 @@ RUN apt-get update && \
 	dpkg -i dumb-init_*.deb && rm -f dumb-init_*.deb && \
 	apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /usr/src/imqs-html2pdf
-COPY package*.json ./
-COPY server.js ./
+WORKDIR /usr/src/htmlrender
 
+# We install in two phases, so that the npm install is generally cached, even if you change server.js
+
+# This is the slow phase, where we download and install Puppeteer
+COPY package*.json ./
 RUN npm install
 
-EXPOSE 80
-CMD [ "npm", "start" ]
+# This is the second phase, which is always very fast
+COPY server.js ./
+
+CMD ["npm", "start"]

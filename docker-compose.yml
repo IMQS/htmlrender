@@ -3,7 +3,7 @@ services:
   html2pdf:
     image: index.docker.io/imqs/html2pdf:latest
     ports:
-      - "80:80"
+      - "80:2078"
     init: true
   watchtower:
     image: v2tec/watchtower

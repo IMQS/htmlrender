@@ -1,5 +1,5 @@
 {
-	"name": "imqs-html2pdf",
+	"name": "htmlrender",
 	"version": "1.0.0",
 	"private": true,
 	"scripts": {

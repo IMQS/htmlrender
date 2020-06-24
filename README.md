@@ -1,9 +1,10 @@
-# imqs-html2pdf
-Small node express/puppeteer server that receives html via a post request, uses Chrome Headless to render the document to PDF or PNG.
+# htmlrender
+Small node express/puppeteer server that receives HTML via a POST request, and uses Chrome Headless (Puppeteer) to render the document to PDF or PNG.
+
+>> This service was originally called imqs-html2pdf, but once it starting doing things other than PDF, we renamed it to htmlrender
 
 # Run Server
 Install dependencies: `npm install`
-
 Start server: `npm start`
 
 # Examples
@@ -14,12 +15,11 @@ Start server: `npm start`
 
 # Docker
 
-Build container: `docker build -t imqs-html2pdf .`
+Build container: `docker build -t htmlrender .`
+Run container: `docker run -p 8080:2078 htmlrender`
 
-Run container: `docker run -p 8080:80 imqs-html2pdf`
+From here on out, we use the old name `imqs-html2pdf`, to avoid pointless churn work
 
-Tag container: `docker tag imqs-html2pdf gcr.io/html2pdf-207011/imqs-html2pdf`
-
+Tag container: `docker tag htmlrender gcr.io/html2pdf-207011/imqs-html2pdf`
 Push container: `docker push gcr.io/html2pdf-207011/imqs-html2pdf`
-
 Deploy new container onto GCP VM: `gcloud compute instances update-container imqs-puppeteer-server --container-image gcr.io/html2pdf-207011/imqs-html2pdf`

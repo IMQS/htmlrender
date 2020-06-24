@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer');
 const bodyParser = require('body-parser');
 
 // Constants
-const PORT = 80;
+const PORT = 2078;
 const HOST = '0.0.0.0';
 
 // App
@@ -47,9 +47,9 @@ function render(req, res) {
 
 	let bodyHtml;
 	let headerHtml;
-	let footerHtml;	
+	let footerHtml;
 	let isHeaderFooter = false;
-	
+
 	width = parseInt(width);
 	height = parseInt(height);
 	deviceScaleFactor = parseFloat(deviceScaleFactor);
@@ -57,7 +57,7 @@ function render(req, res) {
 	bottomMargin = parseInt(bottomMargin);
 
 	if (req.is('application/json')) {
-		// If you are using a header and/or footer, then you probably want to specify 
+		// If you are using a header and/or footer, then you probably want to specify
 		// top and bottom margin
 		headerHtml = req.body.header;
 		bodyHtml = req.body.body;
@@ -82,19 +82,19 @@ function render(req, res) {
 				waitUntil: 'domcontentloaded'
 			});
 
-			if (format == 'pdf') {				
+			if (format == 'pdf') {
 				await page.pdf({
-						format: pageSize,
-						landscape: pageLandscape,
-						printBackground: true,
-						displayHeaderFooter: isHeaderFooter,
-						headerTemplate: headerHtml,
-						footerTemplate: footerHtml,
-						margin: {
-							top: topMargin,
-							bottom: bottomMargin
-						}
-					})
+					format: pageSize,
+					landscape: pageLandscape,
+					printBackground: true,
+					displayHeaderFooter: isHeaderFooter,
+					headerTemplate: headerHtml,
+					footerTemplate: footerHtml,
+					margin: {
+						top: topMargin,
+						bottom: bottomMargin
+					}
+				})
 					.then((value) => {
 						res.setHeader('content-type', 'application/pdf');
 						res.send(value);
