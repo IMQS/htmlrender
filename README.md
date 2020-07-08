@@ -9,17 +9,16 @@ Start server: `npm start`
 
 # Examples
 
-    curl -H "Content-Type:text/html" -d "<h1>Hello world</h1>" "localhost:8080/render?format=pdf" --output test.pdf
-    curl -H "Content-Type:text/html" -d "<h1>Hello world</h1>" "localhost:8080/render?format=png" --output test.png
-    curl -H "Content-Type:text/html" -d @example.html "localhost:8080/render?format=pdf" --output test.pdf
+    curl -H "Content-Type:text/html" -d "<h1>Hello world</h1>" "localhost:2078/render?format=pdf" --output test.pdf
+    curl -H "Content-Type:text/html" -d "<h1>Hello world</h1>" "localhost:2078/render?format=png" --output test.png
+    curl -H "Content-Type:text/html" -d "<h1>Hello world (size clamped)</h1>" "localhost:2078/render?format=png&width=5000&height=3000" --output test.png
+    curl -H "Content-Type:text/html" -d "<h1>Hello world (massive DPR)</h1>" "localhost:2078/render?format=png&deviceScaleFactor=4" --output test.png
+    curl -H "Content-Type:text/html" -d "<h1>Hello world (massive DPR)</h1>" "localhost:2078/render?format=png&width=2000&height=1414&deviceScaleFactor=0.75" --output test.png
+    curl -H "Content-Type:text/html" -d @example.html "localhost:2078/render?format=pdf" --output test.pdf
 
 # Docker
 
-Build container: `docker build -t htmlrender .`
-Run container: `docker run -p 8080:2078 htmlrender`
-
-From here on out, we use the old name `imqs-html2pdf`, to avoid pointless churn work
-
-Tag container: `docker tag htmlrender gcr.io/html2pdf-207011/imqs-html2pdf`
-Push container: `docker push gcr.io/html2pdf-207011/imqs-html2pdf`
-Deploy new container onto GCP VM: `gcloud compute instances update-container imqs-puppeteer-server --container-image gcr.io/html2pdf-207011/imqs-html2pdf`
+Build container: `docker build -t imqs/htmlrender:master .`
+Run container: `docker run -p 2078:2078 imqs/htmlrender:master`
+Test container: `curl -H "Content-Type:text/html" -d "<h1>Hello container</h1>" "localhost:2078/render?format=png" --output test.png`
+Push container: `docker push imqs/htmlrender:master`
