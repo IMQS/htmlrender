@@ -11,6 +11,8 @@ const HOST = '0.0.0.0';
 // App
 const app = express();
 
+let renderCount = 0;
+
 app.use(bodyParser.json({
 	limit: '50mb'
 }));
@@ -35,6 +37,9 @@ app.use(function (req, res, next) {
 });
 
 function render(req, res) {
+	renderCount++;
+	let renderID = renderCount;
+
 	const format = req.query['format'] || 'pdf';
 	const pageSize = req.query['pagesize'] || 'A4';
 	const pageLandscape = req.query['pagelandscape'] === 'true';
@@ -131,7 +136,7 @@ function render(req, res) {
 			});
 
 			if (format == 'pdf') {
-				console.info(`Rendering pdf ${pageSize} ${pageLandscape}`);
+				console.info(`R:${renderID} Rendering pdf ${pageSize} ${pageLandscape}`);
 				let pdf = await page.pdf({
 					format: pageSize,
 					landscape: pageLandscape,
@@ -147,7 +152,7 @@ function render(req, res) {
 				res.setHeader('content-type', 'application/pdf');
 				res.send(pdf);
 			} else if (format == 'png') {
-				console.info(`Rendering png ${width} x ${height} @ ${deviceScaleFactor}`);
+				console.info(`R:${renderID} Rendering png ${width} x ${height} @ ${deviceScaleFactor}`);
 				await page.setViewport({
 					width: width,
 					height: height,
@@ -161,15 +166,16 @@ function render(req, res) {
 				});
 				res.setHeader('content-type', 'image/png');
 				res.send(png);
+				console.info(`R:${renderID} Rendering ${width} x ${height} @ ${deviceScaleFactor} complete`);
 			} else {
 				res.status(400).send(`Unknown format ${format}. Valid formats are pdf,png`);
 			}
-			console.info("Closing brower (clean exit)");
+			console.info(`R:${renderID} Closing brower (clean exit)`);
 			await browser.close()
 		} catch (error) {
 			console.error(error);
 			res.status(400).send(error);
-			console.info("Closing brower (exception handler)");
+			console.info(`R:${renderID} Closing brower (exception handler)`);
 			await browser.close()
 		}
 	})();
