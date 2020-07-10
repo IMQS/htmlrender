@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# I have no idea what's causing this, but our server is repeatedly hanging.
+# See "A0 issue" in the readme (hint.. it's not just A0)
+
+# This is a watchdog script to mitigate the issue. Whenever a render call takes too
+# long to process, we restart the docker container.
+# I'm hoping that this is a fundamental problem with Puppeteer or Chromium, and 
+# the good folks at Google just magically fix it someday.
+
+echo "$(date) Watchdog starting" >> watchdog.log
+# Give the system time to boot up (for fresh VM reboot)
+sleep 10
+echo "$(date) Watchdog initial sleep complete" >> watchdog.log
+
+while [ 1 ]; do
+	#echo "$(date) Testing" >> watchdog.log
+	curl --connect-timeout 3 --max-time 3 -H "Content-Type:text/html" -d "<h1>Hello world</h1>" "http://htmlrender.imqs.co.za/render?format=png" --output test.png
+	RESULT=$?
+	if [ $RESULT -ne 0 ]; then
+		echo "$(date) Restarting containers" >> watchdog.log
+		docker-compose down && docker-compose up -d
+		#sleep 1
+		echo "$(date) Restart complete" >> watchdog.log
+	fi
+	sleep 10
+done
+
+echo "$(date) Watchdog loop exited (this is WRONG!)" >> watchdog.log
