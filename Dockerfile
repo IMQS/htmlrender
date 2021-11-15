@@ -1,6 +1,6 @@
-# docker build -t imqs/htmlrender:master .
+# docker build -t imqs/htmlrender:latest .
 
-FROM node:lts
+FROM node:14
 
 RUN apt-get update && \
 	apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 \
@@ -23,5 +23,7 @@ RUN npm install
 
 # This is the second phase, which is always very fast
 COPY server.js ./
+
+HEALTHCHECK CMD curl --fail http://localhost:2078/ping || exit 1
 
 CMD ["npm", "start"]
