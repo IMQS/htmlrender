@@ -1,3 +1,6 @@
 node_modules
-test.pdf
+*.pdf
 test.png
+
+*.crt
+*.key

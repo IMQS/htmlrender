@@ -2,5 +2,14 @@
 .editorconfig
 .gitignore
 
+node_modules
+fresh.pdf
+
 Dockerfile
 readme.md
+
+POST_HTTPS.sh
+POST.sh
+
+ssl.crt
+ssl.key
