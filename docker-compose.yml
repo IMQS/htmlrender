@@ -1,9 +1,13 @@
 version: "3.7"
 services:
   html2pdf:
-    image: index.docker.io/imqs/html2pdf:latest
+    image: index.docker.io/imqs/htmlrender:latest
     ports:
       - "80:2078"
+      - "443:2079"
+    volumes:
+      - /opt/htmlrender/ssl:/opt/htmlrender/ssl
+    entrypoint: npm run start_https
     init: true
   watchtower:
     image: v2tec/watchtower

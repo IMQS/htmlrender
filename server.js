@@ -1,12 +1,19 @@
 'use strict';
 
 const express = require('express');
+const https = require('https');
+const fs = require('fs');
 const puppeteer = require('puppeteer');
 const bodyParser = require('body-parser');
 
 // Constants
-const PORT = 2078;
 const HOST = '0.0.0.0';
+const PORT = 2078;
+const SPORT = 2079;
+
+let ENABLE_HTTPS = false;
+if (process.env['ENABLE_HTTPS'] == "TRUE")
+	ENABLE_HTTPS = true;
 
 // App
 const app = express();
@@ -203,3 +210,13 @@ app.get('/ping', ping);
 
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
+
+if (ENABLE_HTTPS) {
+	let options = {
+		key: fs.readFileSync('/opt/htmlrender/ssl/ssl.key'),
+		cert: fs.readFileSync('/opt/htmlrender/ssl/ssl.crt')
+	};
+
+	https.createServer(options, app).listen(SPORT);
+	console.log(`Running on https://${HOST}:${SPORT}`);
+}
