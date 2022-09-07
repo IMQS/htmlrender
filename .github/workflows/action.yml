@@ -8,6 +8,8 @@ on:
       - rc
       - uat
       - stable
+      - "[vV][0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
   pull_request:
     branches:
       - master
