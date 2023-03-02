@@ -144,18 +144,25 @@ function render(req, res) {
 
 			if (format == 'pdf') {
 				console.info(`R:${renderID} Rendering pdf ${pageSize} ${pageLandscape}`);
-				let pdf = await page.pdf({
-					format: pageSize,
-					landscape: pageLandscape,
-					printBackground: true,
-					displayHeaderFooter: isHeaderFooter,
-					headerTemplate: headerHtml,
-					footerTemplate: footerHtml,
-					margin: {
-						top: topMargin,
-						bottom: bottomMargin
-					}
-				});
+				await page.evaluateHandle('document.fonts.ready');
+				let pdf;
+				try {
+					pdf = await page.pdf({
+						format: pageSize,
+						landscape: pageLandscape,
+						printBackground: true,
+						displayHeaderFooter: isHeaderFooter,
+						headerTemplate: headerHtml,
+						footerTemplate: footerHtml,
+						margin: {
+							top: topMargin,
+							bottom: bottomMargin
+						}
+					});
+				}
+				catch (err) {
+					console.info("Error Logging", err);
+				}
 				res.setHeader('content-type', 'application/pdf');
 				res.send(pdf);
 			} else if (format == 'png') {
