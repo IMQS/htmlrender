@@ -161,7 +161,7 @@ function render(req, res) {
 					});
 				}
 				catch (err) {
-					console.info("Error Logging", err);
+					console.info("failed to render PDF", err);
 				}
 				res.setHeader('content-type', 'application/pdf');
 				res.send(pdf);
