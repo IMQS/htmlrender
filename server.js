@@ -137,10 +137,23 @@ function render(req, res) {
 			browser = await puppeteer.launch({
 				args: ['--no-sandbox', '--disable-setuid-sandbox']
 			});
-			let page = await browser.newPage();
-			await page.setContent(bodyHtml, {
-				waitUntil: 'domcontentloaded'
-			});
+
+			let page;
+			try {
+				page = await browser.newPage();
+			} catch (error) {
+				console.info("New Page", error)
+				return;
+			}
+
+			try {
+				await page.setContent(bodyHtml, {
+					waitUntil: 'domcontentloaded'
+				});
+			} catch (error) {
+				console.info("Set Content", error)
+				return;
+			}
 
 			if (format == 'pdf') {
 				console.info(`R:${renderID} Rendering pdf ${pageSize} ${pageLandscape}`);
@@ -160,24 +173,37 @@ function render(req, res) {
 						}
 					});
 				}
-				catch (err) {
-					console.info("failed to render PDF", err);
+				catch (error) {
+					console.info("Failed to render PDF", error)
+					return;
 				}
 				res.setHeader('content-type', 'application/pdf');
 				res.send(pdf);
 			} else if (format == 'png') {
 				console.info(`R:${renderID} Rendering png ${width} x ${height} @ ${deviceScaleFactor}`);
-				await page.setViewport({
-					width: width,
-					height: height,
-					deviceScaleFactor: deviceScaleFactor,
-				});
+				try {
+					await page.setViewport({
+						width: width,
+						height: height,
+						deviceScaleFactor: deviceScaleFactor,
+					});
+				} catch (error) {
+					console.info("Viewport", error)
+					return;
+				}
 
-				let png = await page.screenshot({
-					type: 'png',
-					omitBackground: true,
-					fullPage: true
-				});
+				let png;
+				try {
+					png = await page.screenshot({
+						type: 'png',
+						omitBackground: true,
+						fullPage: true
+					});
+
+				} catch (error) {
+					console.info("Screenshot", error)
+					return;
+				}
 				res.setHeader('content-type', 'image/png');
 				res.send(png);
 				console.info(`R:${renderID} Rendering ${width} x ${height} @ ${deviceScaleFactor} complete`);
@@ -185,12 +211,14 @@ function render(req, res) {
 				res.status(400).send(`Unknown format ${format}. Valid formats are pdf,png`);
 			}
 			console.info(`R:${renderID} Closing brower (clean exit)`);
-			await browser.close()
+			await browser.close();
 		} catch (error) {
 			console.error(error);
 			res.status(400).send(error);
 			console.info(`R:${renderID} Closing brower (exception handler)`);
-			await browser.close()
+			if (browser) {
+				await browser.close();
+			}
 		}
 	})();
 }
