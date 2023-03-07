@@ -157,6 +157,7 @@ function render(req, res) {
 
 			if (format == 'pdf') {
 				console.info(`R:${renderID} Rendering pdf ${pageSize} ${pageLandscape}`);
+				await page.evaluateHandle('document.fonts.ready');
 				let pdf;
 				try {
 					pdf = await page.pdf({
