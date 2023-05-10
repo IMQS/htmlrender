@@ -1,0 +1,74 @@
+# If you are copying markdown docs, use this workflow
+#
+# Replace env variables with values pertaining to your repo
+# After the first successful action run, you'll want to check
+# on the read-us repository to ensure everything went smoothly
+#
+# Note 1: If your repository does not have an access token secret,
+# you'll need to create one. This is necessary to pull/push from/to
+# the private read-us repo. Call it GH_READ_US_PAT
+#
+# Note 2: Only markdown files will be copied from your ./docs folder (if it exists).
+# If there are nested folders inside, they will not be copied to the read-us repo
+
+name: copy_markdown
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on pushed tags
+  push:
+    tags:
+      - "[vV][0-9]+.[0-9]+.[0-9]+"
+
+env:
+  # Where is your markdown stored? This is often "./this_repo/docs"
+  DOCS_PATH: ./this_repo/docs
+  # Where is your main readme stored and what is it called? Do not remove the "this_repo" part of the path.
+  README_PATH: ./this_repo/readme.md
+  # This name will show up in the read-us static site
+  REPO_NAME: HTMLRender
+  # This should be left at default to keep the versioning working correctly (Needs to change for patch version aggregation: eg 0.0.x)
+  VERSION: ${{ github.ref_name }}
+  # Leave these as is (defines which read-us repo to use and where the markdown is stored in read-us repo)
+  DOCS_REPO: IMQS/read-us
+  MD_PATH: ./read-us/docs/md
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "copyMarkdown"
+  copyMarkdown:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    # This repo is checked out alongside the 'read-us' repo
+    steps:
+      # Checks-out your repository at the given path
+      - name: checkout_this
+        uses: actions/checkout@v3
+        with:
+          path: this_repo
+      # We now check out the second repository
+      # - Is checked out at the given path
+      # - Checks out the repo at the given ref
+      - name: checkout_readus
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ env.DOCS_REPO }}
+          path: read-us
+          token: ${{ secrets.GH_READ_US_PAT }}
+
+      - name: create_dummy_folder
+        run: |
+          mkdir -p $MD_PATH/"$REPO_NAME"/$VERSION || echo "folder already exists"
+      # Copy over the docs/ folder if it exists. Copy the main readme file (this needs to exist or the action will fail)
+      - name: copy_markdown
+        run: |
+          [ -d "$DOCS_PATH" ] && echo "Docs folder exists" && cp -R $DOCS_PATH/* $MD_PATH/"$REPO_NAME"/$VERSION || echo "docs folder does not exist"
+          cp $README_PATH $MD_PATH/"$REPO_NAME"/$VERSION/index.md
+      - name: push_docs
+        run: |
+          cd read-us
+          git config --global user.name "docs_action"
+          git config --global user.email "docs_action@github.com"
+          git add . && git commit -m "update $REPO_NAME docs to $VERSION" && git push || echo "Docs have not changed"
