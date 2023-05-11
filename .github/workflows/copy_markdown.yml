@@ -48,6 +48,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: this_repo
+          lfs: true
       # We now check out the second repository
       # - Is checked out at the given path
       # - Checks out the repo at the given ref
@@ -57,6 +58,7 @@ jobs:
           repository: ${{ env.DOCS_REPO }}
           path: read-us
           token: ${{ secrets.GH_READ_US_PAT }}
+          lfs: true
 
       - name: create_dummy_folder
         run: |
