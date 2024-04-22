@@ -142,16 +142,21 @@ function render(req, res) {
 			try {
 				page = await browser.newPage();
 			} catch (error) {
-				console.info("New Page", error)
+				let e = "New Page " + error;
+				console.info(e);
+				res.status(500).send(e);
 				return;
 			}
 
 			try {
 				await page.setContent(bodyHtml, {
-					waitUntil: 'domcontentloaded'
+					waitUntil: 'domcontentloaded',
+					timeout: 600
 				});
 			} catch (error) {
-				console.info("Set Content", error)
+				let e = "Set Content " + error;
+				console.info(e);
+				res.status(500).send(e);
 				return;
 			}
 
@@ -170,11 +175,14 @@ function render(req, res) {
 						margin: {
 							top: topMargin,
 							bottom: bottomMargin
-						}
+						},
+						timeout: 600
 					});
 				}
 				catch (error) {
-					console.info("Failed to render PDF", error)
+					let e = "Failed to render PDF " + error;
+					console.info(e);
+					res.status(500).send(e);
 					return;
 				}
 				res.setHeader('content-type', 'application/pdf');
@@ -188,7 +196,9 @@ function render(req, res) {
 						deviceScaleFactor: deviceScaleFactor,
 					});
 				} catch (error) {
-					console.info("Viewport", error)
+					let e = "Viewport " + error;
+					console.info(e);
+					res.status(500).send(e);
 					return;
 				}
 
@@ -201,7 +211,9 @@ function render(req, res) {
 					});
 
 				} catch (error) {
-					console.info("Screenshot", error)
+					let e = "Screenshot " + error;
+					console.info(e);
+					res.status(500).send(e);
 					return;
 				}
 				res.setHeader('content-type', 'image/png');
@@ -225,7 +237,7 @@ function render(req, res) {
 
 function version(req, res) {
 	res.send({
-		version: '1.4'
+		version: '1.4.1'
 	});
 }
 
