@@ -151,7 +151,7 @@ function render(req, res) {
 			try {
 				await page.setContent(bodyHtml, {
 					waitUntil: 'domcontentloaded',
-					timeout: 600
+					timeout: 600000
 				});
 			} catch (error) {
 				let e = "Set Content " + error;
@@ -176,7 +176,7 @@ function render(req, res) {
 							top: topMargin,
 							bottom: bottomMargin
 						},
-						timeout: 600
+						timeout: 600000
 					});
 				}
 				catch (error) {
