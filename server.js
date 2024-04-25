@@ -142,8 +142,8 @@ function render(req, res) {
 			try {
 				page = await browser.newPage();
 			} catch (error) {
-				let e = "New Page " + error;
-				console.info(e);
+				let e = "New Page " + error.toString();
+				console.error(e);
 				res.status(500).send(e);
 				return;
 			}
@@ -154,8 +154,8 @@ function render(req, res) {
 					timeout: 600000
 				});
 			} catch (error) {
-				let e = "Set Content " + error;
-				console.info(e);
+				let e = "Set Content " + error.toString();
+				console.error(e);
 				res.status(500).send(e);
 				return;
 			}
@@ -180,8 +180,8 @@ function render(req, res) {
 					});
 				}
 				catch (error) {
-					let e = "Failed to render PDF " + error;
-					console.info(e);
+					let e = "Failed to render PDF " + error.toString();
+					console.error(e);
 					res.status(500).send(e);
 					return;
 				}
@@ -196,8 +196,8 @@ function render(req, res) {
 						deviceScaleFactor: deviceScaleFactor,
 					});
 				} catch (error) {
-					let e = "Viewport " + error;
-					console.info(e);
+					let e = "Viewport " + error.toString();
+					console.error(e);
 					res.status(500).send(e);
 					return;
 				}
@@ -211,8 +211,8 @@ function render(req, res) {
 					});
 
 				} catch (error) {
-					let e = "Screenshot " + error;
-					console.info(e);
+					let e = "Screenshot " + error.toString();
+					console.error(e);
 					res.status(500).send(e);
 					return;
 				}
