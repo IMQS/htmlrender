@@ -36,4 +36,4 @@ jobs:
           username: ${{ secrets.DEPLOY_DOCKER_USERNAME }}
           password: ${{ secrets.DEPLOY_DOCKER_PASSWORD }}
           tag_with_ref: true
-          cache_froms: node:14
+          cache_froms: node:20
