@@ -7,7 +7,26 @@ Small node express/puppeteer server that receives HTML via a POST request, and u
 Install dependencies: `npm install`
 Start server: `npm start`
 
-# A0 issue
+# Known Issues
+
+## Ubuntu 18.04
+
+Currently this docker image fails to start on ubuntu 18.04 with the following
+errors:
+```
+	1: 0xccd047 node::Assert(node::AssertionInfo const&) [node]
+	2: 0xd4c2ee node::WorkerThreadsTaskRunner::WorkerThreadsTaskRunner(int) [node]
+	3: 0xd4c3cc node::NodePlatform::NodePlatform(int, v8::TracingController*, v8::PageAllocator*) [node]
+	4: 0xc6f786  [node]
+	5: 0xc70c84 node::Start(int, char**) [node]
+	6: 0x7f4b6bcd824a  [/lib/x86_64-linux-gnu/libc.so.6]
+	7: 0x7f4b6bcd8305 __libc_start_main [/lib/x86_64-linux-gnu/libc.so.6]
+	8: 0xbc7afe _start [node]
+```
+
+Docker image works fine on Ubuntu 20.04 and Arch Linux (2024-04-29)
+
+## A0 issue
 There is a bug somewhere - and it very much looks like a bug in chromium or puppeteer, which is causing this system
 to become unresponsive when rendering A0 PNGs. I can't figure it out, because we clamp the resolution to 2000x2000,
 and when rendering smaller page sizes, but at the same number of pixels, everything is fine.
