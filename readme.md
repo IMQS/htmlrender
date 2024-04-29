@@ -26,6 +26,8 @@ errors:
 
 Docker image works fine on Ubuntu 20.04 and Arch Linux (2024-04-29)
 
+*Currently running v1.1.0 on google cloud for IMQS as a workaround*
+
 ## A0 issue
 There is a bug somewhere - and it very much looks like a bug in chromium or puppeteer, which is causing this system
 to become unresponsive when rendering A0 PNGs. I can't figure it out, because we clamp the resolution to 2000x2000,
