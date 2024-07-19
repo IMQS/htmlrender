@@ -55,3 +55,17 @@ Build container: `docker build -t imqs/htmlrender:master .`
 Run container: `docker run -p 2078:2078 imqs/htmlrender:master`
 Test container: `curl -H "Content-Type:text/html" -d "<h1>Hello container</h1>" "localhost:2078/render?format=png" --output test.png`
 Push container: `docker push imqs/htmlrender:master`
+
+# SSL
+
+The service expects our normal `ssl.crt` and `ssl.key` files in `./ssl`,
+relative to the executable location. You can check the `docker-compose.yml` file
+for the volume mount for Docker instances.
+
+For a GCE (Docker) instance, SSH into the VM and navigate to `/deploy/docker/ssl`.
+Replace the files with the new ones.
+Restart the service with the `restart` bash script.
+
+_Check the files are in Linux format (LF) and not Windows format (CRLF), as well
+as the correct permissions. Also check if no BOM record is present in either
+file._
