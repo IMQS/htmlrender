@@ -1,33 +1,24 @@
-name: Build Puppeteer Service
+name: Build Pull Request
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the master branch
-  push:
-    branches:
-      - master
-      - rc
-      - uat
-      - stable
-    tags:
-      - "[vV][0-9]+.[0-9]+.[0-9]+"
-  workflow_dispatch:
+  # Trigger the workflow on all pull request,
   pull_request:
     branches:
       - master
+  workflow_dispatch:
   # Also trigger on page_build, as well as release created events
   page_build:
   release:
     types: # This configuration does not affect the page_build event above
       - created
-concurrency: ${{ github.ref }}
 
 jobs:
   build:
-    name: Build Puppeteer
+    name: Build PR
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        id: checkout
         with:
           lfs: true
       - name: build-push
@@ -35,5 +26,7 @@ jobs:
         with:
           username: ${{ secrets.DEPLOY_DOCKER_USERNAME }}
           password: ${{ secrets.DEPLOY_DOCKER_PASSWORD }}
+          repository: imqs/htmlrender
           tag_with_ref: true
+          build_args: SSH_KEY=${{ secrets.DEPLOYBOT_SSH_KEY }}
           cache_froms: node:20
