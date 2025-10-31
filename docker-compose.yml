@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   html2pdf:
     image: index.docker.io/imqs/htmlrender:latest
@@ -9,6 +8,10 @@ services:
       - /opt/htmlrender/ssl:/opt/htmlrender/ssl
     entrypoint: npm run start_https
     init: true
+    logging:
+      driver: syslog
+      options:
+        tag: html2pdf
   watchtower:
     image: v2tec/watchtower
     volumes:
