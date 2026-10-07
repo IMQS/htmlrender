@@ -9,25 +9,6 @@ Start server: `npm start`
 
 # Known Issues
 
-## Ubuntu 18.04
-
-Currently this docker image fails to start on ubuntu 18.04 with the following
-errors:
-```
-	1: 0xccd047 node::Assert(node::AssertionInfo const&) [node]
-	2: 0xd4c2ee node::WorkerThreadsTaskRunner::WorkerThreadsTaskRunner(int) [node]
-	3: 0xd4c3cc node::NodePlatform::NodePlatform(int, v8::TracingController*, v8::PageAllocator*) [node]
-	4: 0xc6f786  [node]
-	5: 0xc70c84 node::Start(int, char**) [node]
-	6: 0x7f4b6bcd824a  [/lib/x86_64-linux-gnu/libc.so.6]
-	7: 0x7f4b6bcd8305 __libc_start_main [/lib/x86_64-linux-gnu/libc.so.6]
-	8: 0xbc7afe _start [node]
-```
-
-Docker image works fine on Ubuntu 20.04 and Arch Linux (2024-04-29)
-
-*Currently running v1.1.0 on google cloud for IMQS as a workaround*
-
 ## A0 issue
 There is a bug somewhere - and it very much looks like a bug in chromium or puppeteer, which is causing this system
 to become unresponsive when rendering A0 PNGs. I can't figure it out, because we clamp the resolution to 2000x2000,
@@ -51,10 +32,10 @@ Ben Harper, 2020-07-08
 
 # Docker
 
-Build container: `docker build -t imqs/htmlrender:master .`
-Run container: `docker run -p 2078:2078 imqs/htmlrender:master`
+Build container: `docker build -t imqs/htmlrender:latest .`
+Run container: `docker run -p 2078:2078 imqs/htmlrender:latest`
 Test container: `curl -H "Content-Type:text/html" -d "<h1>Hello container</h1>" "localhost:2078/render?format=png" --output test.png`
-Push container: `docker push imqs/htmlrender:master`
+Push container: `docker push imqs/htmlrender:latest`
 
 # SSL
 
