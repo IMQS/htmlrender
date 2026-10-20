@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.0
+
+* build: Update dependencies. Requirements bumped to node 24
+
 ## v1.2.0
 
 * feat(render): Allows creation of pdfs with custom dimensions (ASG-3281, ASG-3282)
